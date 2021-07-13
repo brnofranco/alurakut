@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
 
 import Box from '../src/components/Box';
 import MainGrid from '../src/components/MainGrid';
 import ProfileSidebar from '../src/components/ProfileSidebar';
-import ProfileBox from '../src/components/ProfileBox';
+import CardBox from '../src/components/CardBox';
 import {ProfileRelationsBoxWrapper} from '../src/components/ProfileRelations';
 
+import api from '../src/services/api';
 
 
 export default function Home() {
+  const [user, setUser] = useState();
+  const [followers, setFollowers] = useState('');
+ 
   const gitHubUser = 'brnofranco';
 
   const favoritePeople = ['madrigueira', 'furigato', 'guhma', 'vitorpinheiro29', 'lucasgabrielmello', 'leonardomleitao']
@@ -19,6 +23,18 @@ export default function Home() {
     title: 'Eu odeio acordar cedo',
     image: 'https://img10.orkut.br.com/community/52cc4290facd7fa700b897d8a1dc80aa.jpg',
   }]);
+
+  useEffect(() => {
+    api.get(`/users/${gitHubUser}`)
+    .then(( response ) => {
+      setUser(response.data)
+    });
+
+    api.get(`/users/${gitHubUser}/followers`)
+    .then(( response ) => {
+      setFollowers(response.data)
+    })
+  }, []);
 
   return (
     <>
@@ -31,7 +47,7 @@ export default function Home() {
 
       <div className="welcomeArea" style={{gridArea: 'welcomeArea'}}>        
         <Box>
-          <h1 className="title"> Bem-vindo(a) </h1>
+          <h1 className="title"> Bem-vindo(a), {user?.name}. </h1>
           <OrkutNostalgicIconSet />
         </Box>
         <Box>
@@ -75,16 +91,16 @@ export default function Home() {
 
       <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>        
         <ProfileRelationsBoxWrapper>
-          <ProfileBox
+          <CardBox
               title={`Pessoas da comunidade (${favoritePeople.length})`}
               mainVar={favoritePeople}
-              urlDirection="users"
+              urlDirection="https://github.com"
           />
           <a className="boxLink" href="#"> Ver todos </a>
         </ProfileRelationsBoxWrapper>
         
         <ProfileRelationsBoxWrapper>
-          <ProfileBox
+          <CardBox
               title={`Comunidades (${community.length})`}
               mainVar={community}
               urlDirection="communities"
