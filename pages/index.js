@@ -11,12 +11,13 @@ import api from '../src/services/api';
 
 
 export default function Home() {
-  const [user, setUser] = useState();
-  const [followers, setFollowers] = useState('');
- 
   const gitHubUser = 'brnofranco';
+  
+  const [user, setUser] = useState();
+  const [followers, setFollowers] = useState([]);
 
-  const favoritePeople = ['madrigueira', 'furigato', 'guhma', 'vitorpinheiro29', 'lucasgabrielmello', 'leonardomleitao']
+  /* const favoritePeople = [
+    'madrigueira', 'furigato', 'guhma', 'vitorpinheiro29', 'lucasgabrielmello', 'leonardomleitao', 'leonardonegrao'] */
 
   const [community, setCommunity] = useState([{
     id: '675876',
@@ -31,10 +32,12 @@ export default function Home() {
     });
 
     api.get(`/users/${gitHubUser}/followers`)
-    .then(( response ) => {
-      setFollowers(response.data)
+    .then(( { data } ) => {
+      setFollowers(data)
     })
   }, []);
+
+  /* console.log(followers, user) */
 
   return (
     <>
@@ -47,7 +50,7 @@ export default function Home() {
 
       <div className="welcomeArea" style={{gridArea: 'welcomeArea'}}>        
         <Box>
-          <h1 className="title"> Bem-vindo(a), {user?.name}. </h1>
+          <h1 className="title"> Bem-vindo(a), {user?.name || 'Usuário'}. </h1>
           <OrkutNostalgicIconSet />
         </Box>
         <Box>
@@ -92,11 +95,10 @@ export default function Home() {
       <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>        
         <ProfileRelationsBoxWrapper>
           <CardBox
-              title={`Pessoas da comunidade (${favoritePeople.length})`}
-              mainVar={favoritePeople}
+              title={`Pessoas da comunidade (${followers.length})`}
+              mainVar={followers}
               urlDirection="https://github.com"
           />
-          <a className="boxLink" href="#"> Ver todos </a>
         </ProfileRelationsBoxWrapper>
         
         <ProfileRelationsBoxWrapper>
@@ -105,7 +107,6 @@ export default function Home() {
               mainVar={community}
               urlDirection="communities"
           />
-          <a className="boxLink" href="#"> Ver todos </a>
         </ProfileRelationsBoxWrapper>
       </div>
 
