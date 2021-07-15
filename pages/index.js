@@ -5,39 +5,59 @@ import Box from '../src/components/Box';
 import MainGrid from '../src/components/MainGrid';
 import ProfileSidebar from '../src/components/ProfileSidebar';
 import CardBox from '../src/components/CardBox';
-import {ProfileRelationsBoxWrapper} from '../src/components/ProfileRelations';
 
 import api from '../src/services/api';
+/* import { getAllCommunities } from '../src/lib/dato-cms'; */
 
 
 export default function Home() {
   const gitHubUser = 'brnofranco';
-  
-  const [user, setUser] = useState();
+
+  const [user, setUser] = useState([]);
   const [followers, setFollowers] = useState([]);
 
-  /* const favoritePeople = [
-    'madrigueira', 'furigato', 'guhma', 'vitorpinheiro29', 'lucasgabrielmello', 'leonardomleitao', 'leonardonegrao'] */
+  const [communities, setCommunities] = useState([]);
 
-  const [community, setCommunity] = useState([{
-    id: '675876',
-    title: 'Eu odeio acordar cedo',
-    image: 'https://img10.orkut.br.com/community/52cc4290facd7fa700b897d8a1dc80aa.jpg',
-  }]);
 
   useEffect(() => {
     api.get(`/users/${gitHubUser}`)
     .then(( response ) => {
-      setUser(response.data)
+      setUser(response.data);
+    }).catch( error => {
+      throw new Error("Deu algum pepino. ", error.status);
     });
 
     api.get(`/users/${gitHubUser}/followers`)
     .then(( { data } ) => {
-      setFollowers(data)
+      setFollowers(data);
     })
-  }, []);
 
-  /* console.log(followers, user) */
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Authorization': '99d26706dcb827ded33b1c6ec12d64',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({ "query": `query {
+        allCommunities {
+            id
+            title
+            imageUrl
+            creatorSlug
+        }
+    }` })
+    })
+    .then((response) => response.json())
+    .then((fullResponse) => {
+      const dataCommunities = fullResponse.data.allCommunities;
+      /* console.log(dataCommunities) */
+      setCommunities(dataCommunities);
+    })
+
+  }, [communities]);
+
+
 
   return (
     <>
@@ -59,17 +79,28 @@ export default function Home() {
             event.preventDefault();
 
             const dataForm = new FormData(event.target);
-            const communities = {
-              id: new Date().toISOString(),
+
+            const newCommunity = {
               title: dataForm.get('title'),
-              image: dataForm.get('image'),
+              imageUrl: dataForm.get('image'),
+              creatorSlug: gitHubUser,
             }
 
-            const newCommunities = [...community, communities]
-            setCommunity(newCommunities);
-          }
-
-          }>
+            fetch('/api/communities', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(newCommunity)
+            })
+            .then(async (response) => {
+              const data = await response.json();
+              console.log(data.createdRegister);
+              const newCommunity = data.createdRegister;
+              const updatedCommnities = [...communities, newCommunity];
+              setCommunities(updatedCommnities)
+            })
+          }}>
             <div>
               <input 
                 type="text"
@@ -93,24 +124,28 @@ export default function Home() {
       </div>
 
       <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>        
-        <ProfileRelationsBoxWrapper>
           <CardBox
-              title={`Pessoas da comunidade (${followers.length})`}
-              mainVar={followers}
+              title={'Pessoas da comunidade'}
+              items={followers}
               urlDirection="https://github.com"
           />
-        </ProfileRelationsBoxWrapper>
-        
-        <ProfileRelationsBoxWrapper>
           <CardBox
-              title={`Comunidades (${community.length})`}
-              mainVar={community}
+              title={'Comunidades'}
+              items={communities}
               urlDirection="communities"
           />
-        </ProfileRelationsBoxWrapper>
       </div>
 
     </MainGrid>
     </>
   )
 }
+
+/* export const getStaticProps = async () => {
+  const community = await getAllCommunities();
+  return {
+    props: {
+      community,
+    }
+  }
+} */
