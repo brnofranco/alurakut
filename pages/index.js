@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import nookies from 'nookies';
 import { AlurakutMenu, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommons';
+import jwt from 'jsonwebtoken';
 
 import Box from '../src/components/Box';
 import MainGrid from '../src/components/MainGrid';
@@ -7,11 +9,11 @@ import ProfileSidebar from '../src/components/ProfileSidebar';
 import CardBox from '../src/components/CardBox';
 
 import api from '../src/services/api';
-/* import { getAllCommunities } from '../src/lib/dato-cms'; */
 
 
-export default function Home() {
-  const gitHubUser = 'brnofranco';
+
+export default function Home(props) {
+  const githubUser = props.githubUser;
 
   const [user, setUser] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -20,17 +22,15 @@ export default function Home() {
 
 
   useEffect(() => {
-    api.get(`/users/${gitHubUser}`)
+    api.get(`/users/${githubUser}`)
     .then(( response ) => {
       setUser(response.data);
-    }).catch( error => {
-      throw new Error("Deu algum pepino. ", error.status);
     });
 
-    api.get(`/users/${gitHubUser}/followers`)
+    api.get(`/users/${githubUser}/followers`)
     .then(( { data } ) => {
       setFollowers(data);
-    })
+    });
 
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
@@ -51,27 +51,26 @@ export default function Home() {
     .then((response) => response.json())
     .then((fullResponse) => {
       const dataCommunities = fullResponse.data.allCommunities;
-      /* console.log(dataCommunities) */
       setCommunities(dataCommunities);
-    })
+    });
 
-  }, [communities]);
+  }, []);
 
 
 
   return (
     <>
-    <AlurakutMenu githubUser={gitHubUser}/>
+    <AlurakutMenu githubUser={githubUser}/>
     <MainGrid>
 
       <div className="profileArea" style={{gridArea: 'profileArea'}}>
-        <ProfileSidebar gitHubUser={gitHubUser} />
+        <ProfileSidebar gitHubUser={githubUser} />
       </div>
 
       <div className="welcomeArea" style={{gridArea: 'welcomeArea'}}>        
         <Box>
           <h1 className="title"> Bem-vindo(a), {user?.name || 'Usuário'}. </h1>
-          <OrkutNostalgicIconSet />
+          <OrkutNostalgicIconSet confiavel={3} legal={3} sexy={3} />
         </Box>
         <Box>
           <h2 className="subTitle"> O que você deseja fazer? </h2>
@@ -83,7 +82,7 @@ export default function Home() {
             const newCommunity = {
               title: dataForm.get('title'),
               imageUrl: dataForm.get('image'),
-              creatorSlug: gitHubUser,
+              creatorSlug: githubUser,
             }
 
             fetch('/api/communities', {
@@ -125,7 +124,7 @@ export default function Home() {
 
       <div className="profileRelationsArea" style={{gridArea: 'profileRelationsArea'}}>        
           <CardBox
-              title={'Pessoas da comunidade'}
+              title={'Seguidores'}
               items={followers}
               urlDirection="https://github.com"
           />
@@ -141,11 +140,31 @@ export default function Home() {
   )
 }
 
-/* export const getStaticProps = async () => {
-  const community = await getAllCommunities();
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context);
+  const token = cookies.USER_TOKEN;
+
+  const { isAuthenticated } = await fetch('https://alurakut.vercel.app/api/auth', {
+    headers: { 
+      Authorization: token,
+    }
+  })
+  .then((response) => response.json());
+
+  if (!isAuthenticated) {
+    return {
+        redirect: {
+          destination: '/login',
+          permanent: false,
+        }
+      }
+  }
+
+  const { githubUser } = jwt.decode(token);
+  
   return {
     props: {
-      community,
-    }
+      githubUser,
+    },
   }
-} */
+}
