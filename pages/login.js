@@ -3,13 +3,13 @@ import { useRouter } from 'next/router';
 import { Toaster, toast } from 'react-hot-toast';
 import nookies from 'nookies';
 
-export default function LoginPage() {
+export default function LoginScreen() {
     const router = useRouter();
 
     const [githubUser, setGithubUser] = useState('');
 
   return (
-    <main style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <main style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
     <div><Toaster/></div>
       <div className="loginScreen">
         <section className="logoArea">
@@ -24,7 +24,7 @@ export default function LoginPage() {
           <form className="box" onSubmit={(e) => {
             e.preventDefault();
 
-            if(githubUser.length === 0 /* || password.length === 0 */) {
+            if(githubUser.length === 0) {
                 toast.error("Campo obrigatório não preenchido!");
                 return;
             } else {
@@ -50,7 +50,7 @@ export default function LoginPage() {
           }}>
             <p>
               Acesse agora mesmo com seu usuário do <strong>GitHub</strong>!
-          </p>
+            </p>
             <input
                 placeholder="Usuário"
                 value={githubUser}
@@ -64,7 +64,7 @@ export default function LoginPage() {
           <footer className="box">
             <p>
               Ainda não é membro? <br />
-              <a href="/login">
+              <a href="https://github.com/login">
                 <strong>
                   ENTRAR JÁ
               </strong>
@@ -75,10 +75,10 @@ export default function LoginPage() {
 
         <footer className="footerArea">
           <p>
-            © 2021 alura.com.br - <a href="/">Sobre o Orkut.br</a> - <a href="/">Centro de segurança</a> - <a href="/">Privacidade</a> - <a href="/">Termos</a> - <a href="/">Contato</a>
+            © 2021 - <a href="https://www.alura.com.br/" target="_blank">Sobre o Alura.br</a> - <a href="/login">Centro de segurança</a> - <a href="/login">Privacidade</a> - <a href="/login">Termos</a> - <a href="/login">Contato</a>
           </p>
         </footer>
       </div>
     </main>
   )
-} 
+}

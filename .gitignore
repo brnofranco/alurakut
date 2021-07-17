@@ -32,7 +32,3 @@ yarn-error.log*
 
 # vercel
 .vercel
-
-
-# teste do datocms
-/src/lib/dato-cms.js
