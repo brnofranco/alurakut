@@ -1,7 +1,7 @@
 <h1 align="center"> Alurakut - Imersão React </h1>
 
 <h1 align="center">
-    <img alt="Alurakut" src="" />
+    <img alt="Alurakut" src="https://i.ibb.co/Tr6QRps/Screenshot-2.png" />
 </h1>
 
 <br>
@@ -35,6 +35,6 @@ O app estará disponível no seu browser pelo endereço http://localhost:3000.
 
 ## 💻 Projeto
 
-Alurakut é apenas uma maneira de aprender programação front-end recriando o nostalgico Orkut com estilos mais atuais.
+Alurakut foi um projeto criado pela Alura para instruir alunos que estão aprendendo programação front-end, recriando o nostalgico Orkut utilizando estilos mais atuais.
 
-Este é um projeto desenvolvido durante a **[Imersão React](https://www.alura.com.br/imersao-react)**.
+Desenvolvido durante a **[Imersão React](https://www.alura.com.br/imersao-react)**.

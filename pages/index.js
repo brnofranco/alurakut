@@ -41,12 +41,12 @@ export default function Home(props) {
       },
       body: JSON.stringify({ "query": `query {
         allCommunities {
-            id
-            title
-            imageUrl
-            creatorSlug
+          id 
+          title
+          imageUrl
+          creatorSlug
         }
-    }` })
+      }`})
     })
     .then((response) => response.json())
     .then((fullResponse) => {
@@ -70,7 +70,7 @@ export default function Home(props) {
       <div className="welcomeArea" style={{gridArea: 'welcomeArea'}}>        
         <Box>
           <h1 className="title"> Bem-vindo(a), {user?.name || 'Usuário'}. </h1>
-          <OrkutNostalgicIconSet confiavel={3} legal={3} sexy={3} />
+          <OrkutNostalgicIconSet confiavel={3} legal={2} sexy={1} />
         </Box>
         <Box>
           <h2 className="subTitle"> O que você deseja fazer? </h2>
@@ -133,6 +133,7 @@ export default function Home(props) {
               items={communities}
               urlDirection="communities"
           />
+          {console.log(communities)}
       </div>
 
     </MainGrid>
